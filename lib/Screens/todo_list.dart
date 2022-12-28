@@ -10,7 +10,7 @@ class TodoList extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController textController = TextEditingController();
     TextEditingController texteditController = TextEditingController();
-    final listProvider = Provider.of<TodoListProvider>(context);
+    // final listProvider = Provider.of<TodoListProvider>(context,  listen: false);
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -62,133 +62,143 @@ class TodoList extends StatelessWidget {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      listProvider
-                          .addList(TaskModel(textController.text, false));
-                      textController.clear();
+                  Consumer<TodoListProvider>(
+                    builder: (context, value, child) {
+                      return GestureDetector(
+                        onTap: () {
+                          value.addList(TaskModel(textController.text, false));
+                          textController.clear();
+                        },
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          decoration: const BoxDecoration(
+                              color: Colors.black, shape: BoxShape.circle),
+                          child: const Icon(
+                            Icons.add,
+                            size: 40,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
                     },
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.15,
-                      width: MediaQuery.of(context).size.width * 0.15,
-                      decoration: const BoxDecoration(
-                          color: Colors.black, shape: BoxShape.circle),
-                      child: const Icon(
-                        Icons.add,
-                        size: 40,
-                        color: Colors.white,
-                      ),
-                    ),
                   ),
                 ],
               ),
               const SizedBox(
                 height: 10,
               ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.6,
-                width: MediaQuery.of(context).size.width * 0.9,
-                decoration: BoxDecoration(
-                  color: Colors.amber,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          listProvider.clearList();
-                        },
-                        icon: const Icon(Icons.clear_all_sharp)),
-                    Expanded(
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        child: ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: listProvider.itemList.length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 30,
-                                  vertical: 10,
-                                ),
-                                color: Colors.red,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 40,
-                                  vertical: 20,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(listProvider.itemList[index].detail),
-                                    IconButton(
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return AlertDialog(
-                                                title: const Text('Edit Item'),
-                                                content: Form(
-                                                  child: TextFormField(
-                                                    controller:
-                                                        texteditController,
-                                                    onChanged: (value) {},
-                                                    decoration:
-                                                        const InputDecoration(
-                                                      labelText:
-                                                          'Edit item text',
+              Consumer<TodoListProvider>(
+                builder: (context, dataModel, child) {
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              dataModel.clearList();
+                            },
+                            icon: const Icon(Icons.clear_all_sharp)),
+                        Expanded(
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height,
+                            child: ListView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: dataModel.itemList.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 30,
+                                      vertical: 10,
+                                    ),
+                                    color: Colors.red,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 40,
+                                      vertical: 20,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(dataModel.itemList[index].detail),
+                                        IconButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title:
+                                                        const Text('Edit Item'),
+                                                    content: Form(
+                                                      child: TextFormField(
+                                                        controller:
+                                                            texteditController,
+                                                        onChanged: (value) {},
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          labelText:
+                                                              'Edit item text',
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
-                                                ),
-                                                actions: [
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                    child: const Text('Cancel'),
-                                                  ),
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      listProvider.updateItem(
-                                                          index,
+                                                    actions: [
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: const Text(
+                                                            'Cancel'),
+                                                      ),
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          dataModel.updateItem(
+                                                              index,
+                                                              texteditController
+                                                                  .text);
+                                                          Navigator.of(context)
+                                                              .pop();
                                                           texteditController
-                                                              .text);
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                      texteditController
-                                                          .clear();
-                                                    },
-                                                    child: const Text('Save'),
-                                                  ),
-                                                ],
+                                                              .clear();
+                                                        },
+                                                        child:
+                                                            const Text('Save'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
                                               );
                                             },
-                                          );
-                                        },
-                                        icon: const Icon(Icons.edit)),
-                                    IconButton(
-                                      onPressed: () {
-                                        listProvider.removeItem(index);
-                                      },
-                                      icon: const Icon(Icons.delete),
+                                            icon: const Icon(Icons.edit)),
+                                        IconButton(
+                                          onPressed: () {
+                                            dataModel.removeItem(index);
+                                          },
+                                          icon: const Icon(Icons.delete),
+                                        ),
+                                        Checkbox(
+                                          value: dataModel
+                                              .itemList[index].isChecked,
+                                          onChanged: (value) {
+                                            dataModel.checkBoxList(
+                                                value!, index);
+                                          },
+                                        ),
+                                      ],
                                     ),
-                                    Checkbox(
-                                      value: listProvider
-                                          .itemList[index].isChecked,
-                                      onChanged: (value) {
-                                        listProvider.checkBoxList(
-                                            value!, index);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                      ),
+                                  );
+                                }),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ],
           ),
