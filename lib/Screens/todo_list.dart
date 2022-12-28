@@ -136,7 +136,7 @@ class TodoList extends StatelessWidget {
                                                     decoration:
                                                         const InputDecoration(
                                                       labelText:
-                                                          'Edit Item Text',
+                                                          'Edit item text',
                                                     ),
                                                   ),
                                                 ),
