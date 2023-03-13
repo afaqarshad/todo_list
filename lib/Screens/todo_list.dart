@@ -10,7 +10,6 @@ class TodoList extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController textController = TextEditingController();
     TextEditingController texteditController = TextEditingController();
-    // final listProvider = Provider.of<TodoListProvider>(context,  listen: false);
     return Scaffold(
       body: Container(
         height: double.infinity,
